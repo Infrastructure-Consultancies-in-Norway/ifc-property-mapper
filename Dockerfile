@@ -1,16 +1,18 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # Stage 1: Build the React frontend
 # ─────────────────────────────────────────────────────────────────────────────
-FROM node:22-slim AS frontend-builder
+FROM node:22-alpine AS frontend-builder
 
 WORKDIR /build/frontend
 
-# Increase Node memory limit to avoid OOM during npm install
-ENV NODE_OPTIONS="--max-old-space-size=2048"
+# Disable npm fund/audit warnings and set higher memory
+ENV NODE_OPTIONS="--max-old-space-size=4096" \
+    npm_config_fund=false \
+    npm_config_audit=false
 
-# Install dependencies first (layer cache)
+# Install dependencies – try npm ci first, fallback to npm install
 COPY frontend/package.json frontend/package-lock.json ./
-RUN npm install --legacy-peer-deps
+RUN npm ci --no-audit || npm install --no-audit
 
 # Copy source and build
 COPY frontend/ ./
