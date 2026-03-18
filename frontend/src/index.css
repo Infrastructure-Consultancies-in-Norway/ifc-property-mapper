@@ -1,0 +1,19 @@
+/* Global reset and base styles */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  background: #0f1117;
+  color: #e2e8f0;
+}
+
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; font-family: inherit; font-size: inherit; }
+input, select { font-family: inherit; font-size: inherit; }

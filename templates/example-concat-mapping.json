@@ -1,0 +1,48 @@
+{
+  "version": "1",
+  "name": "example-concat-mapping",
+  "description": "Concatenate two source properties into a single target property",
+  "schemaHints": ["IFC2X3", "IFC4X3"],
+  "nodes": [
+    {
+      "id": "src-1",
+      "type": "SourceProperty",
+      "config": { "pset": "Pset_WallCommon", "property": "IsExternal" }
+    },
+    {
+      "id": "src-2",
+      "type": "SourceProperty",
+      "config": { "pset": "BIM_Tverrfaglig", "property": "BIM.05 - Elementnavn" }
+    },
+    {
+      "id": "concat-1",
+      "type": "Concat",
+      "config": { "delimiter": " | " }
+    },
+    {
+      "id": "target-1",
+      "type": "TargetProperty",
+      "config": {
+        "pset": "BIM_Mapped",
+        "property": "MappedDescription",
+        "createPsetIfMissing": true,
+        "overwriteExisting": true,
+        "nullPolicy": "skip"
+      }
+    }
+  ],
+  "edges": [
+    { "id": "e1", "source": "src-1", "sourceHandle": "value", "target": "concat-1", "targetHandle": "input_0" },
+    { "id": "e2", "source": "src-2", "sourceHandle": "value", "target": "concat-1", "targetHandle": "input_1" },
+    { "id": "e3", "source": "concat-1", "sourceHandle": "value", "target": "target-1", "targetHandle": "value" }
+  ],
+  "executionOptions": {
+    "createPsetIfMissing": true,
+    "overwriteExisting": true,
+    "nullPolicy": "skip"
+  },
+  "metadata": {
+    "createdAt": "2026-03-18T00:00:00Z",
+    "updatedAt": "2026-03-18T00:00:00Z"
+  }
+}

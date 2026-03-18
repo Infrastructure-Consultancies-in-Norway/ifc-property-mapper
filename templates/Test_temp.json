@@ -1,0 +1,211 @@
+{
+  "version": "1",
+  "name": "Test_temp",
+  "description": "",
+  "schemaHints": [
+    "IFC2X3"
+  ],
+  "nodes": [
+    {
+      "id": "1fa13149-e4a0-4fe5-9e83-c4d9f868a3e5",
+      "type": "SourceProperty",
+      "position": {
+        "x": 274.8335109874745,
+        "y": 417.02210978559924
+      },
+      "data": {
+        "pset": "KON_Felles",
+        "property": "KON.20 - Produksjonsenhet",
+        "ifc_class": "",
+        "properties": [
+          {
+            "pset": "KON_Felles",
+            "property": "KON.20 - Produksjonsenhet"
+          },
+          {
+            "pset": "KON_Felles",
+            "property": "KON.12 - Elementgruppering"
+          }
+        ]
+      }
+    },
+    {
+      "id": "4cb4e55a-0268-4ef4-a831-cf8a1479dc08",
+      "type": "TargetProperty",
+      "position": {
+        "x": 656.3920122302109,
+        "y": 438.85457660439005
+      },
+      "data": {
+        "pset": "BIM_KIM",
+        "property": "PROD_ENHET",
+        "ifc_class": ""
+      }
+    },
+    {
+      "id": "7853ec69-cc97-4dbf-a6ae-516a63e89247",
+      "type": "SourceProperty",
+      "position": {
+        "x": 280.15716566510395,
+        "y": 566.9371337339585
+      },
+      "data": {
+        "pset": "KON_Betong",
+        "property": "BET.04 - Materialspesifikasjon (dup)",
+        "ifc_class": ""
+      }
+    },
+    {
+      "id": "9e143f04-f374-48ec-a34f-494a764b7b70",
+      "type": "SourceProperty",
+      "position": {
+        "x": 290.71017562130066,
+        "y": 725.6728822316144
+      },
+      "data": {
+        "pset": "KON_FDV",
+        "property": "FDV.12 - V440 Navn",
+        "ifc_class": ""
+      }
+    },
+    {
+      "id": "c5bd79d2-9388-4650-8e5e-bc3f6fc543a5",
+      "type": "Concat",
+      "position": {
+        "x": 634.3236546776296,
+        "y": 636.4086307292703
+      },
+      "data": {
+        "delimiter": "  - ",
+        "input_count": 2
+      }
+    },
+    {
+      "id": "89705101-26e9-485d-9361-4bbc308e8787",
+      "type": "TargetProperty",
+      "position": {
+        "x": 862.9160898732058,
+        "y": 634.4400638622911
+      },
+      "data": {
+        "pset": "BIM_KIM",
+        "property": "CONCAT_PROP",
+        "ifc_class": ""
+      }
+    },
+    {
+      "id": "8b386877-d56c-4f86-b6ba-cbcdc03ff0b4",
+      "type": "Preview",
+      "position": {
+        "x": 1110.7199636737896,
+        "y": 651.6910075418082
+      },
+      "data": {
+        "label": "Preview"
+      }
+    },
+    {
+      "id": "68faa889-e873-4f33-ab71-56531d9dfbe7",
+      "type": "TargetProperties",
+      "position": {
+        "x": 904.4819463789514,
+        "y": 861.522408474626
+      },
+      "data": {
+        "ifc_class": "",
+        "pset": "BIM_KIM",
+        "properties": [
+          "TESTING",
+          "TESTING2",
+          "TESTING3"
+        ],
+        "property": ""
+      }
+    },
+    {
+      "id": "cb8c7f65-8fd1-4797-86fe-b36a742bac77",
+      "type": "SourceProperties",
+      "position": {
+        "x": 296.79187930532316,
+        "y": 866.3641755892351
+      },
+      "data": {
+        "ifc_class": "",
+        "pset": "KON_Felles",
+        "properties": [
+          "KON.01 - Konstruksjonsnummer",
+          "KON.02 - Konstruksjonsnavn",
+          "KON.11 - Konstruksjonsdel"
+        ],
+        "property": ""
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "xy-edge__1fa13149-e4a0-4fe5-9e83-c4d9f868a3e5value-4cb4e55a-0268-4ef4-a831-cf8a1479dc08value",
+      "source": "1fa13149-e4a0-4fe5-9e83-c4d9f868a3e5",
+      "sourceHandle": "value",
+      "target": "4cb4e55a-0268-4ef4-a831-cf8a1479dc08",
+      "targetHandle": "value"
+    },
+    {
+      "id": "xy-edge__7853ec69-cc97-4dbf-a6ae-516a63e89247value-c5bd79d2-9388-4650-8e5e-bc3f6fc543a5in-0",
+      "source": "7853ec69-cc97-4dbf-a6ae-516a63e89247",
+      "sourceHandle": "value",
+      "target": "c5bd79d2-9388-4650-8e5e-bc3f6fc543a5",
+      "targetHandle": "in-0"
+    },
+    {
+      "id": "xy-edge__9e143f04-f374-48ec-a34f-494a764b7b70value-c5bd79d2-9388-4650-8e5e-bc3f6fc543a5in-1",
+      "source": "9e143f04-f374-48ec-a34f-494a764b7b70",
+      "sourceHandle": "value",
+      "target": "c5bd79d2-9388-4650-8e5e-bc3f6fc543a5",
+      "targetHandle": "in-1"
+    },
+    {
+      "id": "xy-edge__c5bd79d2-9388-4650-8e5e-bc3f6fc543a5value-89705101-26e9-485d-9361-4bbc308e8787value",
+      "source": "c5bd79d2-9388-4650-8e5e-bc3f6fc543a5",
+      "sourceHandle": "value",
+      "target": "89705101-26e9-485d-9361-4bbc308e8787",
+      "targetHandle": "value"
+    },
+    {
+      "id": "xy-edge__c5bd79d2-9388-4650-8e5e-bc3f6fc543a5value-8b386877-d56c-4f86-b6ba-cbcdc03ff0b4in-0",
+      "source": "c5bd79d2-9388-4650-8e5e-bc3f6fc543a5",
+      "sourceHandle": "value",
+      "target": "8b386877-d56c-4f86-b6ba-cbcdc03ff0b4",
+      "targetHandle": "in-0"
+    },
+    {
+      "id": "xy-edge__c5bd79d2-9388-4650-8e5e-bc3f6fc543a5value-68faa889-e873-4f33-ab71-56531d9dfbe7in-0",
+      "source": "c5bd79d2-9388-4650-8e5e-bc3f6fc543a5",
+      "sourceHandle": "value",
+      "target": "68faa889-e873-4f33-ab71-56531d9dfbe7",
+      "targetHandle": "in-0"
+    },
+    {
+      "id": "xy-edge__cb8c7f65-8fd1-4797-86fe-b36a742bac77out-0-68faa889-e873-4f33-ab71-56531d9dfbe7in-1",
+      "source": "cb8c7f65-8fd1-4797-86fe-b36a742bac77",
+      "sourceHandle": "out-0",
+      "target": "68faa889-e873-4f33-ab71-56531d9dfbe7",
+      "targetHandle": "in-1"
+    },
+    {
+      "id": "xy-edge__cb8c7f65-8fd1-4797-86fe-b36a742bac77out-1-68faa889-e873-4f33-ab71-56531d9dfbe7in-2",
+      "source": "cb8c7f65-8fd1-4797-86fe-b36a742bac77",
+      "sourceHandle": "out-1",
+      "target": "68faa889-e873-4f33-ab71-56531d9dfbe7",
+      "targetHandle": "in-2"
+    }
+  ],
+  "executionOptions": {
+    "createPsetIfMissing": true,
+    "overwriteExisting": true,
+    "nullPolicy": "skip"
+  },
+  "metadata": {
+    "createdAt": "2026-03-18T14:02:26.184587+00:00",
+    "updatedAt": "2026-03-18T15:53:22.950023+00:00"
+  }
+}

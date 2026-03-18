@@ -1,0 +1,32 @@
+# Python
+backend/.venv/
+backend/__pycache__/
+backend/**/__pycache__/
+backend/**/*.pyc
+backend/*.egg-info/
+backend/.pytest_cache/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Node
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Runtime output
+runs/*.json
+runs/*.ifc
+
+# Uploads (temp)
+backend/uploads/
+
+# Environment
+.env
+.env.local
+backend/.env
+
+# OS
+.DS_Store
+Thumbs.db
