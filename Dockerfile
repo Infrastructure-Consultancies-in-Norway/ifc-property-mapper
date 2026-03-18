@@ -14,40 +14,28 @@ COPY frontend/ ./
 RUN npm run build
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Stage 2: Runtime – Python backend + Nginx to serve frontend
+# Stage 2: Runtime – single uvicorn process serves API + static frontend
 # ─────────────────────────────────────────────────────────────────────────────
 FROM python:3.12-slim AS runtime
 
-# Install nginx and supervisor (to run nginx + uvicorn together)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    nginx \
-    supervisor \
-    && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
 
-# ── Backend ──────────────────────────────────────────────────────────────────
-WORKDIR /app/backend
-
+# Install Python dependencies
 COPY backend/requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy backend source
 COPY backend/app/ ./app/
+
+# Copy built frontend into the location FastAPI StaticFiles expects
+COPY --from=frontend-builder /build/frontend/dist ./static/
 
 # Runtime directories
 RUN mkdir -p uploads runs templates
 
-# ── Frontend static files ─────────────────────────────────────────────────────
-COPY --from=frontend-builder /build/frontend/dist /usr/share/nginx/html
+# Copy seed templates
+COPY templates/ ./templates/
 
-# ── Config files ──────────────────────────────────────────────────────────────
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-# Remove the default nginx site config that conflicts
-RUN rm -f /etc/nginx/sites-enabled/default
+EXPOSE 3000
 
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
-# ── Templates (optional seed data) ───────────────────────────────────────────
-COPY templates/ /app/backend/templates/
-
-EXPOSE 80
-
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "3000"]
