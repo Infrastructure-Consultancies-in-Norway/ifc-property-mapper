@@ -5,9 +5,12 @@ FROM node:22-slim AS frontend-builder
 
 WORKDIR /build/frontend
 
+# Increase Node memory limit to avoid OOM during npm install
+ENV NODE_OPTIONS="--max-old-space-size=2048"
+
 # Install dependencies first (layer cache)
 COPY frontend/package.json frontend/package-lock.json ./
-RUN npm ci
+RUN npm install --legacy-peer-deps
 
 # Copy source and build
 COPY frontend/ ./
