@@ -28,6 +28,17 @@ import { useStore } from '../store';
 import type { AppNode, AppEdge, NodeType } from '../types';
 
 import { SourcePropertyNode } from './nodes/SourcePropertyNode';
+
+function generateId(): string {
+  const bytes = crypto.getRandomValues(new Uint8Array(16));
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  return [...bytes]
+    .map((b, i) =>
+      [4, 6, 8, 10].includes(i) ? `-${b.toString(16).padStart(2, '0')}` : b.toString(16).padStart(2, '0'),
+    )
+    .join('');
+}
 import { TargetPropertyNode } from './nodes/TargetPropertyNode';
 import { SourcePropertiesNode } from './nodes/SourcePropertiesNode';
 import { TargetPropertiesNode } from './nodes/TargetPropertiesNode';
@@ -179,7 +190,7 @@ export function MappingCanvas() {
       };
 
       const newNode: AppNode = {
-        id: crypto.randomUUID(),
+        id: generateId(),
         type,
         position,
         data: defaultDataForType(type),
