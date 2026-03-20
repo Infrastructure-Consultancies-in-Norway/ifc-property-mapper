@@ -1,27 +1,4 @@
-# ─────────────────────────────────────────────────────────────────────────────
-# Stage 1: Build the React frontend
-# ─────────────────────────────────────────────────────────────────────────────
-FROM node:22-alpine AS frontend-builder
-
-WORKDIR /build/frontend
-
-# Disable npm fund/audit warnings and set higher memory
-ENV NODE_OPTIONS="--max-old-space-size=4096" \
-    npm_config_fund=false \
-    npm_config_audit=false
-
-# Install dependencies – try npm ci first, fallback to npm install
-COPY frontend/package.json frontend/package-lock.json ./
-RUN npm ci --no-audit || npm install --no-audit
-
-# Copy source and build
-COPY frontend/ ./
-RUN npm run build
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Stage 2: Runtime – single uvicorn process serves API + static frontend
-# ─────────────────────────────────────────────────────────────────────────────
-FROM python:3.12-slim AS runtime
+FROM python:3.12-slim
 
 WORKDIR /app
 
@@ -32,8 +9,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy backend source
 COPY backend/app/ ./app/
 
-# Copy built frontend into the location FastAPI StaticFiles expects
-COPY --from=frontend-builder /build/frontend/dist ./static/
+# Copy pre-built frontend (committed to repo, no Node needed at build time)
+COPY frontend/dist/ ./static/
 
 # Runtime directories
 RUN mkdir -p uploads runs templates

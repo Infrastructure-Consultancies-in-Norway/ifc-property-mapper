@@ -12,7 +12,7 @@ backend/.pytest_cache/
 
 # Node
 frontend/node_modules/
-frontend/dist/
+# frontend/dist/ is committed so Docker doesn't need to build it
 frontend/.vite/
 
 # Runtime output
