@@ -13,6 +13,8 @@ npm install
 npm run dev
 
 # Type-check + build for production
+# IMPORTANT: After any frontend changes, rebuild and commit the dist folder
+# before deploying (Docker does not build the frontend — dist/ is committed)
 npm run build
 
 # Lint TypeScript and React files
@@ -44,6 +46,21 @@ uvicorn app.main:app --reload --port 8000
 
 # API docs at http://localhost:8000/docs
 ```
+
+### Deployment (Dokploy)
+
+The Docker image contains only the Python backend. The pre-built frontend (`frontend/dist/`) is committed to the repo — Docker copies it directly, no Node build step needed.
+
+**Before pushing frontend changes:**
+```bash
+cd frontend
+npm run build
+git add frontend/dist/
+git commit -m "Rebuild frontend"
+git push
+```
+
+Then trigger a redeploy in the Dokploy dashboard — no build happens server-side.
 
 ## Code Style & Architecture Guidelines
 
