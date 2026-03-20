@@ -86,3 +86,56 @@ export async function saveTemplate(template: MappingTemplate): Promise<MappingTe
 export async function deleteTemplate(name: string): Promise<void> {
   await request<unknown>(`/templates/${encodeURIComponent(name)}`, { method: 'DELETE' });
 }
+
+/**
+ * Download a template as a JSON file.
+ * Creates a blob and triggers browser download.
+ */
+export function downloadTemplate(template: MappingTemplate): void {
+  const now = new Date().toISOString().split('T')[0];
+  const filename = `${template.name}_${now}.json`;
+  const blob = new Blob([JSON.stringify(template, null, 2)], {
+    type: 'application/json',
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/**
+ * Parse and validate an uploaded template file.
+ * Returns parsed template or throws an error.
+ */
+export async function parseUploadedTemplate(file: File): Promise<MappingTemplate> {
+  const text = await file.text();
+  try {
+    const data = JSON.parse(text);
+    // Basic validation: check for required fields
+    if (!data.nodes || !Array.isArray(data.nodes)) {
+      throw new Error('Missing or invalid "nodes" array');
+    }
+    if (!data.edges || !Array.isArray(data.edges)) {
+      throw new Error('Missing or invalid "edges" array');
+    }
+    // Validate each node has position and data
+    for (const node of data.nodes) {
+      if (!node.position || typeof node.position !== 'object') {
+        throw new Error(`Node "${node.id}" is missing valid "position" field`);
+      }
+      if (!node.data || typeof node.data !== 'object') {
+        throw new Error(`Node "${node.id}" is missing valid "data" field`);
+      }
+    }
+    return data as MappingTemplate;
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      throw new Error('Failed to parse JSON: Invalid JSON format');
+    }
+    throw error;
+  }
+}

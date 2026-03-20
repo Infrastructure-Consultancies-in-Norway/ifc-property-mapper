@@ -4,24 +4,23 @@
  * Clicking Edit replaces the label with a free-text + datalist input.
  */
 
-import { useState } from 'react';
-import { Handle, Position, type NodeProps } from '@xyflow/react';
+import { useEffect, useRef, useState } from 'react';
+import { Handle, Position, useUpdateNodeInternals, type NodeProps } from '@xyflow/react';
 import { useStore } from '../../store';
-
-// .node__body has padding-left: 10px and the node has border: 1px.
-// left:-11px + React Flow's translate(-50%) = handle center on the node border.
-const HANDLE_LEFT = -11;
 
 export function TargetPropertiesNode({ id, data, selected }: NodeProps) {
   const pset = (data.pset as string) || '';
   const properties = (data.properties as string[]) || [];
   const ifcClass = (data.ifc_class as string) || '';
   const { updateNodeData, ifcClasses } = useStore();
+  const updateNodeInternals = useUpdateNodeInternals();
 
   const [editingIndex, setEditingIndex] = useState<number>(-1);
   const [editingValue, setEditingValue] = useState('');
+  const [rowTops, setRowTops] = useState<number[]>([]);
+  const rowRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const nodeRef = useRef<HTMLDivElement | null>(null);
 
-  // Datalist suggestions for the PSet (existing property names)
   const propsForPset: string[] = pset
     ? [...new Set(
         ifcClasses.flatMap((c) =>
@@ -31,6 +30,25 @@ export function TargetPropertiesNode({ id, data, selected }: NodeProps) {
     : [];
 
   const datalistId = `tp-edit-${id}`;
+
+  // Measure row positions after render so handles align with their rows.
+  // Walk offsetTop up to nodeRef to stay zoom-independent.
+  useEffect(() => {
+    const nodeEl = nodeRef.current;
+    if (!nodeEl) return;
+    const tops = rowRefs.current.map(el => {
+      if (!el) return 0;
+      let top = el.offsetTop + el.offsetHeight / 2;
+      let parent = el.offsetParent as HTMLElement | null;
+      while (parent && parent !== nodeEl) {
+        top += parent.offsetTop;
+        parent = parent.offsetParent as HTMLElement | null;
+      }
+      return top;
+    });
+    setRowTops(tops);
+    updateNodeInternals(id);
+  }, [id, properties.length, updateNodeInternals]);
 
   function startEdit(index: number) {
     setEditingIndex(index);
@@ -42,6 +60,7 @@ export function TargetPropertiesNode({ id, data, selected }: NodeProps) {
       updateNodeData(id, {
         properties: properties.map((p, i) => (i === editingIndex ? editingValue.trim() : p)),
       });
+      updateNodeInternals(id);
     }
     setEditingIndex(-1);
     setEditingValue('');
@@ -55,10 +74,11 @@ export function TargetPropertiesNode({ id, data, selected }: NodeProps) {
   function removeProp(index: number) {
     updateNodeData(id, { properties: properties.filter((_, i) => i !== index) });
     if (editingIndex === index) cancelEdit();
+    updateNodeInternals(id);
   }
 
   return (
-    <div className={`node node--target ${selected ? 'node--selected' : ''}`}>
+    <div ref={nodeRef} className={`node node--target ${selected ? 'node--selected' : ''}`}>
       <div className="node__header node__header--target">Target Properties</div>
       <div className="node__body">
         {ifcClass && (
@@ -77,13 +97,11 @@ export function TargetPropertiesNode({ id, data, selected }: NodeProps) {
           </div>
         ) : (
           properties.map((prop, i) => (
-            <div key={i} className="node__row node__row--prop" style={{ position: 'relative' }}>
-              <Handle
-                type="target"
-                position={Position.Left}
-                id={`in-${i}`}
-                style={{ left: HANDLE_LEFT, top: '50%', transform: 'translate(-50%, -50%)' }}
-              />
+            <div
+              key={i}
+              ref={el => { rowRefs.current[i] = el; }}
+              className="node__row node__row--prop"
+            >
               {editingIndex === i ? (
                 <>
                   <input
@@ -120,6 +138,15 @@ export function TargetPropertiesNode({ id, data, selected }: NodeProps) {
           ))
         )}
       </div>
+      {properties.map((_, i) => (
+        <Handle
+          key={i}
+          type="target"
+          position={Position.Left}
+          id={`in-${i}`}
+          style={rowTops[i] !== undefined ? { top: rowTops[i] } : undefined}
+        />
+      ))}
     </div>
   );
 }

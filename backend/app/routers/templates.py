@@ -44,11 +44,21 @@ async def list_templates() -> list[dict]:
 
 @router.get("/{name}")
 async def get_template(name: str) -> JSONResponse:
-    """Load a single template by name."""
+    """Load a single template by name, with validation."""
     path = _template_path(name)
     if not path.exists():
         raise HTTPException(status_code=404, detail=f"Template '{name}' not found.")
-    return JSONResponse(content=json.loads(path.read_text(encoding="utf-8")))
+    
+    try:
+        raw_data = json.loads(path.read_text(encoding="utf-8"))
+        # Validate and normalize through Pydantic model
+        template = MappingTemplate(**raw_data)
+        # Return normalized JSON (ensures consistent schema)
+        return JSONResponse(content=template.model_dump(by_alias=True))
+    except json.JSONDecodeError as e:
+        raise HTTPException(status_code=400, detail=f"Invalid JSON in template: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Invalid template format: {str(e)}")
 
 
 @router.post("")

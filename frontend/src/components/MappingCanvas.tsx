@@ -48,6 +48,7 @@ import { SplitNode } from './nodes/SplitNode';
 import { CastNode } from './nodes/CastNode';
 import { FilterNode } from './nodes/FilterNode';
 import { PreviewNode } from './nodes/PreviewNode';
+import { CanvasToolbar } from './CanvasToolbar';
 
 const nodeTypes: NodeTypes = {
   SourceProperty: SourcePropertyNode,
@@ -204,7 +205,8 @@ export function MappingCanvas() {
   );
 
   return (
-    <div ref={reactFlowWrapper} style={{ width: '100%', height: '100%' }}>
+    <div ref={reactFlowWrapper} style={{ width: '100%', height: '100%', position: 'relative' }}>
+      <CanvasToolbar />
       <ReactFlow
         nodes={nodes as Node[]}
         edges={edges as Edge[]}

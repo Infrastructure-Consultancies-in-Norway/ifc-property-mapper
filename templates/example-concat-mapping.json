@@ -7,33 +7,35 @@
     {
       "id": "src-1",
       "type": "SourceProperty",
-      "config": { "pset": "Pset_WallCommon", "property": "IsExternal" }
+      "position": { "x": 50, "y": 50 },
+      "data": { "ifc_class": "", "pset": "Pset_WallCommon", "property": "IsExternal" }
     },
     {
       "id": "src-2",
       "type": "SourceProperty",
-      "config": { "pset": "BIM_Tverrfaglig", "property": "BIM.05 - Elementnavn" }
+      "position": { "x": 50, "y": 150 },
+      "data": { "ifc_class": "", "pset": "BIM_Tverrfaglig", "property": "BIM.05 - Elementnavn" }
     },
     {
       "id": "concat-1",
       "type": "Concat",
-      "config": { "delimiter": " | " }
+      "position": { "x": 250, "y": 100 },
+      "data": { "delimiter": " | ", "input_count": 2 }
     },
     {
       "id": "target-1",
       "type": "TargetProperty",
-      "config": {
+      "position": { "x": 450, "y": 100 },
+      "data": {
+        "ifc_class": "",
         "pset": "BIM_Mapped",
-        "property": "MappedDescription",
-        "createPsetIfMissing": true,
-        "overwriteExisting": true,
-        "nullPolicy": "skip"
+        "property": "MappedDescription"
       }
     }
   ],
   "edges": [
-    { "id": "e1", "source": "src-1", "sourceHandle": "value", "target": "concat-1", "targetHandle": "input_0" },
-    { "id": "e2", "source": "src-2", "sourceHandle": "value", "target": "concat-1", "targetHandle": "input_1" },
+    { "id": "e1", "source": "src-1", "sourceHandle": "value", "target": "concat-1", "targetHandle": "value" },
+    { "id": "e2", "source": "src-2", "sourceHandle": "value", "target": "concat-1", "targetHandle": "value" },
     { "id": "e3", "source": "concat-1", "sourceHandle": "value", "target": "target-1", "targetHandle": "value" }
   ],
   "executionOptions": {

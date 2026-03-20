@@ -4,25 +4,23 @@
  * Clicking Edit replaces the label with a dropdown filtered to the chosen PSet.
  */
 
-import { useState } from 'react';
-import { Handle, Position, type NodeProps } from '@xyflow/react';
+import { useEffect, useRef, useState } from 'react';
+import { Handle, Position, useUpdateNodeInternals, type NodeProps } from '@xyflow/react';
 import { useStore } from '../../store';
-
-// .node__body has padding-right: 10px and the node has border: 1px.
-// right:-11px + React Flow's translate(50%) = handle center on the node border.
-const HANDLE_RIGHT = -11;
 
 export function SourcePropertiesNode({ id, data, selected }: NodeProps) {
   const pset = (data.pset as string) || '';
   const properties = (data.properties as string[]) || [];
   const ifcClass = (data.ifc_class as string) || '';
   const { updateNodeData, ifcClasses } = useStore();
+  const updateNodeInternals = useUpdateNodeInternals();
 
-  // Which row index is currently being edited (-1 = none)
   const [editingIndex, setEditingIndex] = useState<number>(-1);
   const [editingValue, setEditingValue] = useState('');
+  const [rowTops, setRowTops] = useState<number[]>([]);
+  const rowRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const nodeRef = useRef<HTMLDivElement | null>(null);
 
-  // Properties available for the selected PSet
   const propsForPset: string[] = pset
     ? [...new Set(
         ifcClasses.flatMap((c) =>
@@ -30,6 +28,25 @@ export function SourcePropertiesNode({ id, data, selected }: NodeProps) {
         )
       )].sort()
     : [];
+
+  // Measure row positions after render so handles align with their rows.
+  // Walk offsetTop up to nodeRef to stay zoom-independent.
+  useEffect(() => {
+    const nodeEl = nodeRef.current;
+    if (!nodeEl) return;
+    const tops = rowRefs.current.map(el => {
+      if (!el) return 0;
+      let top = el.offsetTop + el.offsetHeight / 2;
+      let parent = el.offsetParent as HTMLElement | null;
+      while (parent && parent !== nodeEl) {
+        top += parent.offsetTop;
+        parent = parent.offsetParent as HTMLElement | null;
+      }
+      return top;
+    });
+    setRowTops(tops);
+    updateNodeInternals(id);
+  }, [id, properties.length, updateNodeInternals]);
 
   function startEdit(index: number) {
     setEditingIndex(index);
@@ -41,6 +58,7 @@ export function SourcePropertiesNode({ id, data, selected }: NodeProps) {
       updateNodeData(id, {
         properties: properties.map((p, i) => (i === editingIndex ? editingValue : p)),
       });
+      updateNodeInternals(id);
     }
     setEditingIndex(-1);
     setEditingValue('');
@@ -54,10 +72,11 @@ export function SourcePropertiesNode({ id, data, selected }: NodeProps) {
   function removeProp(index: number) {
     updateNodeData(id, { properties: properties.filter((_, i) => i !== index) });
     if (editingIndex === index) cancelEdit();
+    updateNodeInternals(id);
   }
 
   return (
-    <div className={`node node--source ${selected ? 'node--selected' : ''}`}>
+    <div ref={nodeRef} className={`node node--source ${selected ? 'node--selected' : ''}`}>
       <div className="node__header node__header--source">Source Properties</div>
       <div className="node__body">
         {ifcClass && (
@@ -76,7 +95,11 @@ export function SourcePropertiesNode({ id, data, selected }: NodeProps) {
           </div>
         ) : (
           properties.map((prop, i) => (
-            <div key={i} className="node__row node__row--prop" style={{ position: 'relative' }}>
+            <div
+              key={i}
+              ref={el => { rowRefs.current[i] = el; }}
+              className="node__row node__row--prop"
+            >
               {editingIndex === i ? (
                 <>
                   {propsForPset.length > 0 ? (
@@ -115,16 +138,19 @@ export function SourcePropertiesNode({ id, data, selected }: NodeProps) {
                     title="Remove" onClick={(e) => { e.stopPropagation(); removeProp(i); }}>×</button>
                 </>
               )}
-              <Handle
-                type="source"
-                position={Position.Right}
-                id={`out-${i}`}
-                style={{ right: HANDLE_RIGHT, top: '50%', transform: 'translate(50%, -50%)' }}
-              />
             </div>
           ))
         )}
       </div>
+      {properties.map((_, i) => (
+        <Handle
+          key={i}
+          type="source"
+          position={Position.Right}
+          id={`out-${i}`}
+          style={rowTops[i] !== undefined ? { top: rowTops[i] } : undefined}
+        />
+      ))}
     </div>
   );
 }
